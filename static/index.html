@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>אורגנייזר רשימת קניות</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <div class="page" id="loginPage">
+    <div class="card">
+      <h1>התחברו לרשימת הקניות</h1>
+      <div class="field">
+        <label for="loginUser">שם משתמש</label>
+        <input id="loginUser" type="text" autocomplete="username" />
+      </div>
+      <div class="field">
+        <label for="loginPass">סיסמה</label>
+        <input id="loginPass" type="password" autocomplete="current-password" />
+      </div>
+      <div class="field inline">
+        <label><input id="rememberMe" type="checkbox" /> זכרו אותי</label>
+      </div>
+      <button id="loginButton">כניסה</button>
+      <button id="signupButton" class="secondary">צור משתמש חדש</button>
+      <p class="message" id="loginMessage"></p>
+    </div>
+  </div>
+
+  <div class="page hidden" id="appPage">
+    <div class="app-shell">
+      <aside class="sidebar collapsed" id="sidebar">
+        <div class="sidebar-header">
+          <div>
+            <h2>תפריט</h2>
+            <p>נווט בין העמודים</p>
+          </div>
+          <button id="sidebarToggle" class="icon-button" title="הצג/הסתר סרגל">☰</button>
+        </div>
+        <nav class="sidebar-nav">
+          <button class="nav-link active" id="navManage" data-page="managePage">ניהול רשימות</button>
+          <button class="nav-link" id="navItems" data-page="itemsPage">הוספת פריטים</button>
+          <button class="nav-link" id="navShopping" data-page="shoppingPage">קנייה בסופר</button>
+        </nav>
+        <div class="sidebar-footer">
+          <button id="logoutButton" class="secondary">התנתק</button>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <header>
+          <div>
+            <h1>אורגנייזר רשימת קניות משותפת</h1>
+            <p>משתמש מחובר: <span id="currentUser"></span></p>
+          </div>
+        </header>
+
+        <section class="content-panel" id="managePage">
+          <h2>ניהול רשימות</h2>
+          <p>כאן אתה יוצר רשימות חדשות, בוחר רשימה קיימת ומשתף אותה עם אחרים.</p>
+          <div class="field">
+            <label for="listSelectManage">בחר רשימה לעבודה</label>
+            <select id="listSelectManage"></select>
+          </div>
+          <div class="field">
+            <label for="newListTitle">יצירת רשימה חדשה</label>
+            <input id="newListTitle" placeholder="שם הרשימה" />
+            <button id="createListButton">צור רשימה</button>
+          </div>
+          <div class="field">
+            <label for="shareUser">הוספת משתמש לרשימה</label>
+            <input id="shareUser" placeholder="שם משתמש" />
+            <button id="shareListButton">שתף רשימה</button>
+          </div>
+          <div class="message" id="listMessage"></div>
+        </section>
+
+        <section class="content-panel hidden" id="itemsPage">
+          <h2>הוספת פריטים</h2>
+          <p>בחר את הרשימה שאתה עובד עליה והוסף פריטים עם שם בעברית, כמות וקטגוריה.</p>
+          <div class="field">
+            <label for="listSelectAdd">בחר רשימה לעריכה</label>
+            <select id="listSelectAdd"></select>
+          </div>
+          <div class="field">
+            <label for="itemLabel">שם מוצר (בעברית)</label>
+            <input id="itemLabel" placeholder="חלב, עגבניות, בשר" />
+          </div>
+          <div class="field">
+            <label for="itemQuantity">כמות</label>
+            <input id="itemQuantity" type="number" min="0.1" step="0.1" placeholder="7" />
+          </div>
+          <div class="field inline">
+            <label for="itemUnit">יחידה</label>
+            <select id="itemUnit">
+              <option value="count">יחידות</option>
+              <option value="weight">קילוגרם</option>
+            </select>
+            <label for="itemCategory">קטגוריה</label>
+            <select id="itemCategory">
+              <option value="vegis">ירקות ופירות</option>
+              <option value="dairy">חלב ומוצריו</option>
+              <option value="meat">בשר ודגים</option>
+              <option value="bakery">אפייה ומוצרי לחם</option>
+              <option value="other">אחר</option>
+            </select>
+          </div>
+          <button id="addItemButton">הוסף מוצר לרשימה</button>
+          <div class="message" id="itemMessage"></div>
+          <div class="section-card">
+            <h3>מוצרים ברשימה הנבחרת</h3>
+            <table id="itemTable">
+              <thead>
+                <tr>
+                  <th>מוצר</th>
+                  <th>כמות</th>
+                  <th>קטגוריה</th>
+                  <th>סטטוס</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="content-panel hidden" id="shoppingPage">
+          <h2>קנייה בסופר</h2>
+          <p>סמן פריטים שנאספו או עבור קנייה חלקית כדי להשאיר הכמות הנותרת.</p>
+          <div class="field">
+            <label for="listSelectShop">בחר רשימה לקניות</label>
+            <select id="listSelectShop"></select>
+          </div>
+          <div id="shoppingGroups"></div>
+          <button id="finishShoppingButton">סיים קנייה והסר פריטים שנבדקו</button>
+          <div class="message" id="shoppingMessage"></div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
