@@ -351,7 +351,7 @@ class ShopHandler(http.server.SimpleHTTPRequestHandler):
 if __name__ == "__main__":
     print(f"Starting shopping list organizer on http://localhost:{PORT}")
     try:
-        with socketserver.TCPServer(("", PORT), ShopHandler) as httpd:
+        with socketserver.ThreadingTCPServer(("", PORT), ShopHandler) as httpd:
             httpd.serve_forever()
     except KeyboardInterrupt:
         print("\nServer stopped")
