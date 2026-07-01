@@ -82,13 +82,14 @@
             <label for="listSelectAdd">בחר רשימה לעריכה</label>
             <select id="listSelectAdd"></select>
           </div>
-          <div class="field">
+          <div class="field autocomplete-wrapper">
             <label for="itemLabel">שם מוצר (בעברית)</label>
-            <input id="itemLabel" placeholder="חלב, עגבניות, בשר" />
+            <input id="itemLabel" placeholder="חלב, עגבניות, בשר" autocomplete="off" />
+            <ul id="itemSuggestions" class="autocomplete-list hidden"></ul>
           </div>
           <div class="field">
             <label for="itemQuantity">כמות</label>
-            <input id="itemQuantity" type="number" min="0.1" step="0.1" placeholder="7" />
+            <input id="itemQuantity" type="number" min="0.1" step="0.1" placeholder="--" />
           </div>
           <div class="field inline">
             <label for="itemUnit">יחידה</label>
@@ -138,6 +139,7 @@
     </div>
   </div>
 
+  <script src="/static/productSuggestions.js"></script>
   <script src="/static/app.js"></script>
 </body>
 </html>

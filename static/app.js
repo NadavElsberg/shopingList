@@ -28,6 +28,9 @@ const addItemButton = document.getElementById("addItemButton");
 const itemMessage = document.getElementById("itemMessage");
 const itemTableBody = document.querySelector("#itemTable tbody");
 const shoppingGroups = document.getElementById("shoppingGroups");
+const itemSuggestionsList = document.getElementById("itemSuggestions");
+let suggestionIndex = -1;
+let currentSuggestions = [];
 const finishShoppingButton = document.getElementById("finishShoppingButton");
 const shoppingMessage = document.getElementById("shoppingMessage");
 const managePage = document.getElementById("managePage");
@@ -46,6 +49,74 @@ async function fetchJson(path, options = {}) {
     throw new Error(data.error || "אירעה שגיאה");
   }
   return data;
+}
+
+function getMatchingProducts(query) {
+  const normalized = query.trim().toLowerCase();
+  if (!normalized) {
+    return [];
+  }
+  const matches = [];
+  window.productSuggestions.forEach((categoryEntry) => {
+    categoryEntry.products.forEach((product) => {
+      if (product.toLowerCase().startsWith(normalized)) {
+        matches.push({ product, category: categoryEntry.category });
+      }
+    });
+  });
+  return matches.slice(0, 10);
+}
+
+function renderItemSuggestions() {
+  const query = itemLabel.value;
+  currentSuggestions = getMatchingProducts(query);
+  suggestionIndex = -1;
+  itemSuggestionsList.innerHTML = "";
+  if (!currentSuggestions.length) {
+    itemSuggestionsList.classList.add("hidden");
+    return;
+  }
+
+  currentSuggestions.forEach((suggestion, index) => {
+    const item = document.createElement("li");
+    item.className = "autocomplete-item";
+    item.textContent = `${suggestion.product} — ${categoryTitle(suggestion.category)}`;
+    item.dataset.index = index;
+    item.addEventListener("mousedown", (event) => {
+      event.preventDefault();
+      applySuggestion(index);
+    });
+    item.addEventListener("mouseenter", () => {
+      setActiveSuggestion(index);
+    });
+    itemSuggestionsList.appendChild(item);
+  });
+
+  itemSuggestionsList.classList.remove("hidden");
+}
+
+function setActiveSuggestion(index) {
+  suggestionIndex = index;
+  [...itemSuggestionsList.children].forEach((child, childIndex) => {
+    child.classList.toggle("active", childIndex === index);
+  });
+}
+
+function applySuggestion(index) {
+  const selected = currentSuggestions[index];
+  if (!selected) {
+    return;
+  }
+  itemLabel.value = selected.product;
+  itemCategory.value = selected.category;
+  itemSuggestionsList.classList.add("hidden");
+  itemLabel.focus();
+}
+
+function hideItemSuggestions() {
+  suggestionIndex = -1;
+  currentSuggestions = [];
+  itemSuggestionsList.classList.add("hidden");
 }
 
 function setMessage(element, text, isError = false) {
@@ -370,6 +441,7 @@ async function addItem() {
     });
     itemLabel.value = "";
     itemQuantity.value = "";
+    hideItemSuggestions();
     await loadLists();
     setMessage(itemMessage, "המוצר נוסף בהצלחה.");
   } catch (err) {
@@ -412,6 +484,35 @@ logoutButton.addEventListener("click", logout);
 createListButton.addEventListener("click", createList);
 shareListButton.addEventListener("click", shareList);
 addItemButton.addEventListener("click", addItem);
+itemLabel.addEventListener("input", renderItemSuggestions);
+itemLabel.addEventListener("keydown", (event) => {
+  if (itemSuggestionsList.classList.contains("hidden")) {
+    return;
+  }
+  if (event.key === "ArrowDown") {
+    event.preventDefault();
+    if (suggestionIndex < currentSuggestions.length - 1) {
+      setActiveSuggestion(suggestionIndex + 1);
+    }
+  } else if (event.key === "ArrowUp") {
+    event.preventDefault();
+    if (suggestionIndex > 0) {
+      setActiveSuggestion(suggestionIndex - 1);
+    }
+  } else if (event.key === "Enter") {
+    if (suggestionIndex >= 0) {
+      event.preventDefault();
+      applySuggestion(suggestionIndex);
+    }
+  } else if (event.key === "Escape") {
+    hideItemSuggestions();
+  }
+});
+document.addEventListener("click", (event) => {
+  if (!itemLabel.contains(event.target) && !itemSuggestionsList.contains(event.target)) {
+    hideItemSuggestions();
+  }
+});
 finishShoppingButton.addEventListener("click", finishShopping);
 
 init();

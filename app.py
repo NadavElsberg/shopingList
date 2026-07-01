@@ -287,7 +287,7 @@ class ShopHandler(http.server.SimpleHTTPRequestHandler):
             item["checked"] = False
         elif action == "partial":
             try:
-                partial_qty = float(partial)
+                partial_qty = float(partial) # type: ignore
             except (TypeError, ValueError):
                 return self.send_json({"error": "invalid partial_quantity"}, status=400)
             if partial_qty <= 0:
